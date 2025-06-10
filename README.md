@@ -1,1 +1,9 @@
 # project-orange
+
+
+Description:
+A simple warehouse Inventory management and reporting application.
+
+Goal:
+- get a simple web application running with framework Django.
+- build a containerized docker image.
