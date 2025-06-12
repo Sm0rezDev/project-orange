@@ -2,7 +2,7 @@
 
 
 Description:
-A simple warehouse Inventory management and reporting application.
+A simple warehouse Inventory management and monitoring application.
 
 Goal:
 - get a simple web application running with framework Django.
