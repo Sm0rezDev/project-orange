@@ -1,12 +1,83 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'nav.css' %}">
     <title>Warehouse</title>
 </head>
 <body>
     <h1>Inventory management system</h1>
     <p>This is the main page of the warehouse application.</p>
+    <nav>
+        <a href="#Status">Status</a>
+        <a href="#Pack">Packing</a>
+        <a href="#Prod">Production</a>
+    </nav>
+
+    <div id="Pack" class="page">
+        <h1>Packing</h1>
+        <form action="/pack/" method="post">
+            <input type="radio" name="toggle" id="preset">
+            <label for="pack">7 level</label>
+
+            <input type="radio" name="toggle" id="preset">
+            <label for="pack">8 level</label>
+
+            <input type="radio" name="toggle" id="preset">
+            <label for="pack">9 level</label>
+
+            <input type="radio" name="toggle" id="custom">
+            <label for="pack">Custom</label>
+
+            <div class="inputs">
+                <input type="text" class="pall" placeholder="Nnumber of pallets">
+                <input type="text" class="krt" placeholder="Nnumber of box">
+                <input type="submit" value="+">
+            </div>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>timestamp</th>
+                    <th>quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pallet in pallets %}
+                <tr>
+                    <td>{{ pallet.name }}</td>
+                    <td>{{ pallet.boxes }}</td>
+                    <td>{{ pallet.quantity }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="Prod" class="page">
+        <h1>Prod</h1>
+    </div>
+    <div id="Status" class="page default">
+        <h1>Status</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.location }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
