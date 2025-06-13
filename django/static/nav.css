@@ -1,0 +1,29 @@
+.page {
+    display: none;
+}
+
+.default {
+    display: block;
+}
+
+:target{
+    display: block;
+}
+
+:target ~ .default {
+    display: none;
+}
+
+
+/* Forms */
+.pall, .krt {
+    display: none;
+}
+
+#preset:checked ~ .inputs .pall {
+    display: inline;
+}
+
+#custom:checked ~ .inputs .krt {
+    display: inline;
+}
