@@ -3,39 +3,45 @@ from django.db import models
 # Create your models here.
 
 class Branch(models.Model):
-    BranchID = models.AutoField(primary_key=True)
-    Name = models.CharField(max_length=100, default='Rosersberg')
+    branch_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100, default='Rosersberg')
 
 class Orders(models.Model):
-    OrderID = models.AutoField(primary_key=True)
-    Created = models.DateTimeField(auto_now_add=True)
-    Status = models.CharField(max_length=50, choices=[
+    order_id = models.AutoField(primary_key=True)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=50, choices=[
         ('CREATED', 'Created'),
         ('PROCESSING', 'Processing'),
         ('COMPLETED', 'Completed')
     ])
-    Branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
 
 class Products(models.Model):
-    ProductID = models.AutoField(primary_key=True)
-    Name = models.CharField(max_length=100)
-    Group = models.CharField(max_length=3)
+    product_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    group = models.CharField(max_length=3)
 
-class Production(models.Model):
-    ProductionID = models.AutoField(primary_key=True)
-    Product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    Batch = models.CharField(max_length=50, default='0000')
-    Date = models.DateField(auto_now_add=True)
+class Productions(models.Model):
+    production_id = models.AutoField(primary_key=True)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    batch = models.IntegerField(default=0)
+    date = models.DateField(auto_now_add=True)
 
 class Packing(models.Model):
-    Product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    Production = models.ForeignKey(Production, on_delete=models.CASCADE)
-    Lot = models.CharField(max_length=50, default='0000')
-    Quantity = models.IntegerField(default=0)
-    Date = models.DateField(auto_now_add=True)
-    BestBefore = models.DateField(auto_now_add=True)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    production = models.ForeignKey(Productions, on_delete=models.CASCADE)
+    lot = models.IntegerField(default=0)
+    quantity = models.IntegerField(default=0)
+    date = models.DateField(auto_now_add=True)
+    best_before = models.DateField(null=True, blank=True)
 
-class OrderProduct(models.Model):
-    Order = models.ForeignKey(Orders, on_delete=models.CASCADE)
-    Product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    Quantity = models.IntegerField(default=0)
+    class Meta:
+        unique_together = (('product', 'production', 'lot'),)
+
+class ProductOrder(models.Model):
+    order = models.ForeignKey(Orders, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = (('order', 'product'),)
