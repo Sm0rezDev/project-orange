@@ -3,3 +3,5 @@
 *.code-workspace
 __pycache__/
 *.pyc
+django/warehouse/migrations/*
+!django/warehouse/migrations/__init__.py
