@@ -25,7 +25,6 @@ class Production(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='productions')
     batch = models.CharField(max_length=50, default='PROD0000000000', null=True)
     lot = models.CharField(max_length=50, default='0', null=True)
-    date = models.DateField(default='2025-01-01', null=True)
 
     def __str__(self):
         return f"{self.product.name} batch {self.batch}"
@@ -38,22 +37,23 @@ class Order(models.Model):
     ]
     order_id = models.AutoField(primary_key=True)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='orders')
-    created = models.DateTimeField(default='2025-01-01', null=True)
+    created_at = models.DateTimeField(default='2025-01-01', null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='CREATED', null=True)
 
     def __str__(self):
         return f"Order {self.order_id} - {self.status}"
 
 class Packing(models.Model):
+    packing_id = models.AutoField(primary_key=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='packings')
     production = models.ForeignKey(Production, on_delete=models.CASCADE, related_name='packings')
     quantity = models.IntegerField(default=0, null=True)
-    date = models.DateField(default='2025-01-01', null=True)
+    packing_date = models.DateField(default='2025-01-01', null=True)
     best_before = models.DateField(default='2025-01-01', null=True)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['product', 'production'], name='unique_product_production')
+            models.UniqueConstraint(fields=['product_id', 'production_id'], name='unique_product_production')
         ]
 
     def __str__(self):
@@ -70,4 +70,4 @@ class ProductOrder(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} in Order {self.order.order_id}"
+        return f"{self.quantity} x {self.product_id.name} in Order {self.order_id.order_id}"
