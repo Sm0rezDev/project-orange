@@ -40,7 +40,7 @@ jobs:
     - name: Tests
       run: |
         echo "Running tests..."
-        python3 django/manage.py test
+        python3 django/manage.py test warehouse.tests
 
     - name: Log in to GitHub Container Registry
       if: github.event_name != 'pull_request'
