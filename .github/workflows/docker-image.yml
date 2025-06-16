@@ -58,10 +58,12 @@ jobs:
     - name: Push the Docker image
       if: github.event_name != 'pull_request'
       run: |
-        docker push ghcr.io/${{ github.repository }}:latest
+        REPO_LC=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        
+        docker push ghcr.io/${REPO_LC}:latest
         if [[ "${{ github.ref_type }}" == "tag" ]]; then
-          docker tag ghcr.io/${{ github.repository }}:latest ghcr.io/${{ github.repository }}:${{ github.ref_name }}
-          docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+          docker tag ghcr.io/${REPO_LC}:latest ghcr.io/${REPO_LC}:${{ github.ref_name }}
+          docker push ghcr.io/${REPO_LC}:${{ github.ref_name }}
         fi
 
     - name: Remove local Docker images
