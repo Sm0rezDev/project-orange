@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class Branch(models.Model):
     name = models.CharField(max_length=100, default='Rosersberg')
@@ -37,7 +38,7 @@ class Order(models.Model):
     ]
     order_id = models.AutoField(primary_key=True)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='orders')
-    created_at = models.DateTimeField(default='2025-01-01', null=True)
+    created_at = models.DateTimeField(default=timezone.now, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='CREATED', null=True)
 
     def __str__(self):

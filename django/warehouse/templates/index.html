@@ -69,11 +69,10 @@
                 </tr>
             </thead>
             <tbody>
-                {% for product in products %}
+                {% for product in data %}
                 <tr>
-                    <td>{{ product.name }}</td>
+                    <td>{{ product.product__name }}</td>
                     <td>{{ product.quantity }}</td>
-                    <td>{{ product.location }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
