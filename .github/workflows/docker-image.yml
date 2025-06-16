@@ -46,6 +46,8 @@ jobs:
       run: |
         echo "Running tests..."
         export DATABASE_URL=postgres://user:password@localhost:5432/test_db
+        python3 django/manage.py makemigrations
+        python3 django/manage.py migrate
         python3 django/manage.py test warehouse.tests
 
     - name: Log in to GitHub Container Registry
