@@ -34,7 +34,7 @@ jobs:
     - name: Tests
       run: |
         echo "Running tests..."
-        python3 manage.py test
+        python3 django/manage.py test
 
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag ghcr.io/${{ github.repository }}:latest
