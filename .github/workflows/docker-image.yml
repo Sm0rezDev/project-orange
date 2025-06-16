@@ -15,10 +15,18 @@ permissions:
   packages: write
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        ports:
+          - "5432:5432"
 
     steps:
     - uses: actions/checkout@v4
@@ -43,7 +51,9 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/${{ github.repository }}:latest
+      run: |
+        REPO_LC=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        docker build . --file Dockerfile --tag ghcr.io/${REPO_LC}:latest
 
     - name: Push the Docker image
       if: github.event_name != 'pull_request'
