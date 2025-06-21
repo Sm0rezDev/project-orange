@@ -67,12 +67,11 @@ def status(request):
 
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': 'An error occurred while processing your request.'}, status=400)
-        
-    elif request.method == 'GET':
-        return JsonResponse({
-            'status': 'error',
-            'message': 'GET method is not supported for this endpoint. Please use POST with the required parameters.'
-        }, status=200)
+
+    return JsonResponse({
+        'status': 'error',
+        'message': 'GET method is not supported for this endpoint. Please use POST with the required parameters.'
+    }, status=200)
 
 
 def add_production(request):
@@ -111,5 +110,4 @@ def add_production(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
         
-    elif request.method == 'GET':
-        return JsonResponse({'status': 'error', 'message': 'GET method is not supported for this endpoint. Please use POST with the required parameters.'}, status=405)
+    return JsonResponse({'status': 'error', 'message': 'GET method is not supported for this endpoint. Please use POST with the required parameters.'}, status=405)
