@@ -1,17 +1,18 @@
 from django.db import models
-from django.utils import timezone
-
-class Branch(models.Model):
-    name = models.CharField(max_length=100, default='Rosersberg')
-
-    def __str__(self):
-        return self.name
 
 class Group(models.Model):
+    group_id = models.AutoField(primary_key=True)
     group = models.CharField(max_length=10, default='#0')
 
     def __str__(self):
         return self.group
+
+class Restaurant(models.Model):
+    restaurant_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
@@ -24,11 +25,12 @@ class Product(models.Model):
 class Production(models.Model):
     production_id = models.AutoField(primary_key=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='productions')
-    batch = models.CharField(max_length=50, default='PROD0000000000', null=True)
-    lot = models.CharField(max_length=50, default='0', null=True)
+    batch = models.CharField(max_length=50, null=True)
+    lot = models.CharField(max_length=50, null=True)
+    volume = models.FloatField(null=True)
 
     def __str__(self):
-        return f"{self.product.name} batch {self.batch}"
+        return f"Batch {self.batch} Lot {self.lot}"
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -37,28 +39,23 @@ class Order(models.Model):
         ('COMPLETED', 'Completed')
     ]
     order_id = models.AutoField(primary_key=True)
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='orders')
-    created_at = models.DateTimeField(default=timezone.now, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='CREATED', null=True)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='orders')
+    created_at = models.DateTimeField(null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, null=True)
 
     def __str__(self):
         return f"Order {self.order_id} - {self.status}"
 
 class Packing(models.Model):
     packing_id = models.AutoField(primary_key=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='packings')
     production = models.ForeignKey(Production, on_delete=models.CASCADE, related_name='packings')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='packings')
+    packing_date = models.DateField(null=True)
+    best_before = models.DateField(null=True)
     quantity = models.IntegerField(default=0, null=True)
-    packing_date = models.DateField(default='2025-01-01', null=True)
-    best_before = models.DateField(default='2025-01-01', null=True)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['product_id', 'production_id'], name='unique_product_production')
-        ]
 
     def __str__(self):
-        return f"Packing {self.product.name} from {self.production.batch}"
+        return f"Packing {self.packing_id} from Production {self.production_id}"
 
 class ProductOrder(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='product_orders')
@@ -66,9 +63,7 @@ class ProductOrder(models.Model):
     quantity = models.IntegerField(default=0, null=True)
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['order', 'product'], name='unique_order_product')
-        ]
+        unique_together = (('order', 'product'),)
 
     def __str__(self):
-        return f"{self.quantity} x {self.product_id.name} in Order {self.order_id.order_id}"
+        return f"{self.quantity} x {self.product.name} in Order {self.order.order_id}"
