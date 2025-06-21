@@ -1,14 +1,16 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from .models import Production, Packing
+from .models import Product, Production, Packing
 
 from datetime import date, timedelta
 import json
 
-from django.views.decorators.csrf import csrf_exempt
+from django.middleware.csrf import get_token
+
+def get_csrf_token(request):
+    return JsonResponse({'csrfToken': get_token(request)})
 
 # Create your views here.
-@csrf_exempt # remove this in production, use proper CSRF protection
 def status(request):
     if request.method == 'POST':
         body = json.loads(request.body)
@@ -71,3 +73,43 @@ def status(request):
             'status': 'error',
             'message': 'GET method is not supported for this endpoint. Please use POST with the required parameters.'
         }, status=200)
+
+
+def add_production(request):
+    if request.method == 'POST':
+        # CSRF token can be accessed if needed, but do not modify request.headers
+        body = json.loads(request.body)
+        product_id = body.get('product_id')
+
+        if isinstance(product_id, str):
+            # If product_id is a string, assume it's the product name
+            # and fetch the product id
+            product = Product.objects.get(name__iexact=product_id)
+            product_id = product.product_id
+        else:
+            pass
+
+        batch = body.get('batch')
+        lot = body.get('lot')
+        volume = body.get('volume', 0.0)
+
+        if not all([product_id, batch, lot, volume]):
+            return JsonResponse({'status': 'error', 'message': 'Missing required parameters: product_id, batch, lot, and volume are required.'}, status=400)
+        if not isinstance(volume, (int, float)):
+            return JsonResponse({'status': 'error', 'message': 'Volume must be a number.'}, status=400)
+        if volume < 0:
+            return JsonResponse({'status': 'error', 'message': 'Volume cannot be negative.'}, status=400)
+
+        try:
+            production = Production.objects.create(
+                product_id=product_id,
+                batch=batch,
+                lot=lot,
+                volume=volume
+            )
+            return JsonResponse({'status': 'success', 'production_id': production.production_id}, status=201)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+        
+    elif request.method == 'GET':
+        return JsonResponse({'status': 'error', 'message': 'GET method is not supported for this endpoint. Please use POST with the required parameters.'}, status=405)
