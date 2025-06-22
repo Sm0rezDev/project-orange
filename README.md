@@ -66,13 +66,18 @@ http://{{host}}/wp/production/new/
     "volume": 9000
 }
 
+```
+http://{{host}}/wp/packing/
 // Add packing
 {
     "production_id": 4,
     "product_id": 1,
     "quantity": 1
 }
+```
 
+```
+http://localhost:8000/wp/order/new/
 // Add order
 {
     //"restaurant_id": 25,
