@@ -27,16 +27,16 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY',
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS')
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1, localhost')
 
 if ALLOWED_HOSTS:
     ALLOWED_HOSTS = str(ALLOWED_HOSTS).replace(' ', '').split(',')
-else:
-    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 CSRF_COOKIE_SECURE = str(os.getenv('CSRF_COOKIE_SECURE', 'True')) == 'True'
 
-SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', 0))  # 1 year
+CSRF_COOKIE_HTTPONLY = str(os.getenv('CSRF_COOKIE_HTTPONLY', 'False')) == 'True'
+
+SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', 36000))
 SECURE_HSTS_PRELOAD = str(os.getenv('SECURE_HSTS_PRELOAD', 'True')) == 'True'
 SECURE_SSL_REDIRECT = str(os.getenv('SECURE_SSL_REDIRECT', 'False')) == 'True'
 SECURE_HSTS_INCLUDE_SUBDOMAINS = str(os.getenv('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'True')) == 'True'
@@ -70,7 +70,7 @@ ROOT_URLCONF = 'gigasite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'warehouse/templates')],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.getenv('DJANGO_TIME_ZONE', 'Europe/Stockholm')
 
 USE_I18N = True
 
@@ -128,7 +128,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]  # for development
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
