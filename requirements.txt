@@ -1,4 +1,4 @@
 Django >= 5.2.2
 uvicorn == 0.34.3
 dj-database-url == 3.0.0
-psycopg == 3.2.9
+psycopg2-binary
