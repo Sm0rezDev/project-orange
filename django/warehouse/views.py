@@ -1,16 +1,20 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from .models import Product, Production, Packing
+from .models import Product, Production, Packing, Restaurant, Order, ProductOrder
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import json
 
-from django.middleware.csrf import get_token
-
-def get_csrf_token(request):
-    return JsonResponse({'csrfToken': get_token(request)})
+from .utils.helpers import productId_lookup
 
 # Create your views here.
+def index(request):
+    if request.method == 'GET':
+        # Render the index page with a simple message
+        return JsonResponse({
+            'status': 'success',
+            'message': 'CSRF token is set!'
+        }, status=200)
 
 # This view handles the status of products and productions.
 def status(request):
@@ -157,6 +161,72 @@ def add_packing(request):
                 quantity=quantity
             )
             return JsonResponse({'status': 'success', 'packing_id': packing.packing_id}, status=201)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    return JsonResponse({'status': 'error', 'message': 'GET method is not supported for this endpoint. Please use POST with the required parameters.'}, status=405)
+
+def add_order(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+
+        restaurant_id = body.get('restaurant_id', None)
+        city = body.get('city', None)
+        district = body.get('district', None)
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+        products = body.get('products', list)
+
+        provided = [
+            bool(restaurant_id),
+            bool(city),
+            bool(district)
+        ]
+
+        if sum(provided) != 1:
+            return JsonResponse({'status': 'error', 'message': 'Please provide exactly one of restaurant_id, city, or district.'}, status=400)
+        
+        if city:
+            try:
+                restaurant = Restaurant.objects.get(city__iexact=city)
+                restaurant_id = restaurant.restaurant_id
+            except Restaurant.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': f'No restaurant found in city: {city}'}, status=404)
+        
+        if district:
+            try:
+                restaurant = Restaurant.objects.get(district__iexact=district)
+                restaurant_id = restaurant.restaurant_id
+            except Restaurant.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': f'No restaurant found in district: {district}'}, status=404)
+            
+        try:
+            order = Order.objects.create(
+                restaurant_id=restaurant_id,
+                created_at=timestamp,
+                status='CREATED'
+            )
+
+            product_orders = []
+
+            if isinstance(products, list):
+                for product in products:
+                    if isinstance(product, dict):
+                        product_id = productId_lookup(product['product'])
+                        product_quantity = product['quantity']
+
+                        product_orders.append(
+                            ProductOrder(
+                                order = order,
+                                product_id = product_id,
+                                quantity = product_quantity
+                            )
+                        )
+            else:
+                pass
+
+            ProductOrder.objects.bulk_create(product_orders)
+
+            return JsonResponse({'status': 'success', 'message': f"Order created"}, status=201)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
