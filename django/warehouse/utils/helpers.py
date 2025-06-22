@@ -1,6 +1,12 @@
-from ..models import Product
+from ..models import Product, Restaurant
 from django.http import JsonResponse
+from django.apps import apps
 
+def get_model_class(app_label, model_name):
+    try:
+        return apps.get_model(app_label, model_name)
+    except LookupError as e:
+        raise ValueError(f"Model '{model_name}' in app '{app_label}' does not exist.") from e
 
 def productId_lookup(product):
     if isinstance(product, str):
