@@ -42,7 +42,7 @@ jobs:
         pip3 install --upgrade pip
         pip3 install -r requirements.txt
 
-    - name: Tests
+    - name: Smoke tests
       run: |
         echo "Running tests..."
         export DATABASE_URL=postgres://user:password@localhost:5432/test_db
