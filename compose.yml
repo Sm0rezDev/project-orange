@@ -21,6 +21,9 @@ services:
         dockerfile: Dockerfile
     environment:
         DATABASE_URL: postgres://user:password@db:5432/project-orange-db
+        DJANGO_ALLOWED_HOSTS: ""
+        DJANGO_SECRET_KEY: "your-secret-key"
+
     ports:
         - "8000:8000"
     depends_on:
