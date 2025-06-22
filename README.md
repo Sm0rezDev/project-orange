@@ -13,7 +13,7 @@ A simple Warehouse & Production backend serving API endpoints.
 # API Endpoints
 
 ```
-http://{{host}}/wp/status/
+[POST]: http://{{host}}/wp/status/
 
 
 // Inventory status
@@ -56,7 +56,7 @@ http://{{host}}/wp/status/
 ```
 
 ```
-http://{{host}}/wp/production/new/
+[POST]: http://{{host}}/wp/production/new/
 
 // Add production
 {
@@ -69,7 +69,7 @@ http://{{host}}/wp/production/new/
 ```
 
 ```
-http://{{host}}/wp/packing/
+[POST]: http://{{host}}/wp/packing/
 // Add packing
 {
     "production_id": 4,
@@ -79,7 +79,7 @@ http://{{host}}/wp/packing/
 ```
 
 ```
-http://localhost:8000/wp/order/new/
+[POST]: http://localhost:8000/wp/order/new/
 // Add order
 {
     //"restaurant_id": 25,
