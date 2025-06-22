@@ -9,7 +9,9 @@ class Group(models.Model):
 
 class Restaurant(models.Model):
     restaurant_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    district = models.CharField(max_length=100, null=True, default=None)
+
 
     def __str__(self):
         return self.name
@@ -24,7 +26,7 @@ class Product(models.Model):
 
 class Production(models.Model):
     production_id = models.AutoField(primary_key=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='productions')
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='productions')
     batch = models.CharField(max_length=50, null=True)
     lot = models.CharField(max_length=50, null=True)
     volume = models.FloatField(null=True)
@@ -41,18 +43,21 @@ class Order(models.Model):
     order_id = models.AutoField(primary_key=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='orders')
     created_at = models.DateTimeField(null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='CREATED')
 
     def __str__(self):
         return f"Order {self.order_id} - {self.status}"
 
 class Packing(models.Model):
     packing_id = models.AutoField(primary_key=True)
-    production = models.ForeignKey(Production, on_delete=models.CASCADE, related_name='packings')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='packings')
+    production = models.OneToOneField(Production, on_delete=models.CASCADE, related_name='packings')
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='packings')
     packing_date = models.DateField(null=True)
     best_before = models.DateField(null=True)
     quantity = models.IntegerField(default=0, null=True)
+
+    class Meta:
+        unique_together = (('production', 'product'),)
 
     def __str__(self):
         return f"Packing {self.packing_id} from Production {self.production_id}"
