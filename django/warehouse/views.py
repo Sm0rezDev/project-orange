@@ -14,7 +14,7 @@ def index(request):
 
 def status(request):
     if request.method != 'POST':
-        return JsonResponse({'status': 'error', 'message': 'POST required.'}, status=405)
+        return JsonResponse({'status': 'error', 'message': 'GET method forbidden, use POST.'}, status=405)
     try:
         body = json.loads(request.body)
         table = body.get('table', 'products')
