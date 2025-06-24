@@ -1,9 +1,10 @@
 services:
-  db:
+  gigasite-db:
     restart: always
     container_name: project-orange-db
     image: postgres:latest
     environment:
+        # Use ENV variable instad of hardcoded credentials.
         POSTGRES_USER: user
         POSTGRES_PASSWORD: password
         POSTGRES_DB: project-orange-db
@@ -15,19 +16,20 @@ services:
   backend:
     restart: always
     container_name: project-orange-backend
-    image: project-orange-backend:latest
+    image: ghcr.io/sm0rezdev/project-orange-backend:latest
     build:
         context: .
         dockerfile: Dockerfile
     environment:
-        DATABASE_URL: postgres://user:password@db:5432/project-orange-db
-        DJANGO_ALLOWED_HOSTS: ""
-        DJANGO_SECRET_KEY: "your-secret-key"
+        # Use ENV variable instad of hardcoded credentials.
+        DATABASE_URL: postgres://user:password@gigasite-db:5432/project-orange-db
+        DJANGO_ALLOWED_HOSTS: "localhost, 0.0.0.0"
+        DJANGO_SECRET_KEY: "your-secret-key" # used for cryptographic signing, not really used, no authentication is implemented.
 
     ports:
         - "8000:8000"
     depends_on:
-        - db
+        - gigasite-db
 
 volumes:
   project_orange_data:
