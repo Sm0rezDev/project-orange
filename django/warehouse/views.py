@@ -7,8 +7,11 @@ import json
 
 from .utils.helpers import productId_lookup
 
+from django.middleware.csrf import get_token
+
 def index(request):
     if request.method == 'GET':
+        get_token(request)  # Ensure CSRF token is set
         return JsonResponse({'status': 'success', 'message': 'CSRF token is set!'}, status=200)
     return JsonResponse({'status': 'error', 'message': 'Method not allowed.'}, status=405)
 

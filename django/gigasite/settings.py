@@ -32,7 +32,7 @@ ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 if isinstance(ALLOWED_HOSTS, str):
     ALLOWED_HOSTS = str(ALLOWED_HOSTS).replace(' ', '').split(',')
 
-CSRF_COOKIE_SECURE = str(os.getenv('CSRF_COOKIE_SECURE', 'True')) == 'True'
+CSRF_COOKIE_SECURE = str(os.getenv('CSRF_COOKIE_SECURE', 'False')) == 'True'
 
 CSRF_COOKIE_HTTPONLY = str(os.getenv('CSRF_COOKIE_HTTPONLY', 'False')) == 'True'
 
